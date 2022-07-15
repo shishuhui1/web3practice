@@ -7,10 +7,10 @@ const web3 = new Web3("https://polygontestapi.terminet.io/rpc");//与那个链�
 // var privateKey = Buffer.from('08d3df24a307666e7c0f94ae2eea1787c2db58cc58842577c2efb1991bb7fff7', 'hex');
 // var MyContract= new web3.eth.Contract(contractApi,'0xF34e58e99BcB1DC8eB529AfEC5e1cDA87DE82e2F')
 // 私钥交易时用                                     
-// web3.eth.accounts.wallet.add({
-//     address: '0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843',
-//     privateKey: '08d3df24a307666e7c0f94ae2eea1787c2db58cc58842577c2efb1991bb7fff7'
-// });
+web3.eth.accounts.wallet.add({
+    address: '0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843',
+    privateKey: '08d3df24a307666e7c0f94ae2eea1787c2db58cc58842577c2efb1991bb7fff7'
+});
 
 ERC20_aci=[
     {
@@ -277,20 +277,22 @@ ERC20_aci=[
 // .on('receipt', console.log);
 
 // 生成ERC20的合约对象
-
-weth_contract =new web3.eth.ontract('0xF34e58e99BcB1DC8eB529AfEC5e1cDA87DE82e2F', abi=ERC20_aci)
-//读取合约内的Token名称
-weth_contract.function.name().call().then(console.log)
-//读取合约内的Token符号
-weth_contract.functions.symbol().call().then(console.log) / 10**decimals
-//读取合约内的总供应量
- weth_contract.functions.totalSupply().call().then(console.log) / 10**decimals
- //读取合约内的精度数值
- weth_contract.functions.decimals().call().then(console.log) / 10**decimals
- //某个账户下的Token数量
- weth_contract.functions.balanceOf('0xF34e58e99BcB1DC8eB529AfEC5e1cDA87DE82e2F').call().then(console.log)
-
-
-// MyContract.methods.name().call().then(console.log)
-
-
+var transferFormObj = {
+    from:'0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843',
+        to:'0xE0431Bad1E697D212246f24b55bc52A27b330b56',
+        value:web3.utils.toWei('0','ether'),
+        data:'',
+        gasLimit:22000
+    }
+weth_contract =new web3.eth.Contract(ERC20_aci,'0xf6B011A5D9edb658001bF825164554A96Eac1c56')
+//读取合约内的Token名称、符号、总供应量和精度数值
+weth_contract.methods.name().call({from:'0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843'}).then(console.log)
+weth_contract.methods.symbol().call().then(console.log)
+var decimals= weth_contract.methods.decimals().call().then(console.log)
+weth_contract.methods.totalSupply().call()/ 10*decimals.then(console.log)
+//某个用户名下的Token数量
+var balanceOfValue= weth_contract.methods.balanceOf('0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843').call().then(console.log)
+//转ERC20的Token到指定地址
+weth_contract.methods.transferFrom('0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843','0xE0431Bad1E697D212246f24b55bc52A27b330b56',balanceOfValue).call().then(console.log)
+//获取并解析区块中的事件
+weth_contract.methods.Transfer('0xAe9eeC383961e7e43403Fd1FF8e60A2BeA62F843','0xE0431Bad1E697D212246f24b55bc52A27b330b56',balanceOfValue).call().then(console.log)
